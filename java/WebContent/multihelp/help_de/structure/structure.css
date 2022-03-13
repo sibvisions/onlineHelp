@@ -1,0 +1,39 @@
+/*------------------------------------------------------------------------------- 
+  Page styles
+-------------------------------------------------------------------------------*/ 
+
+html {
+  font: normal 14px tahoma,arial,verdana,sans-serif;
+}
+
+body {
+  color: #000000;
+  font: normal 14px tahoma,arial,verdana,sans-serif;
+  margin: 10 10 10 10;
+  padding-top: 0; 
+  padding-bottom: 0;
+}
+
+table
+{
+  font: 14px tahoma,arial,verdana,sans-serif;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 17px;
+  font-weight: bold;
+  font-style: italic;
+  padding-top: 10px;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: bold;
+  font-style: italic;
+  padding-top: 10px;
+}

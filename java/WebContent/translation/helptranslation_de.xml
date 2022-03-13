@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+  <!-- header -->
+  <entry key="APPLICATION help system">APPLIKATION Hilfesystem</entry>
+  <entry key="You are in the help system of APPLICATION.">Sie befinden sich im Hilfesystem von APPLIKATION.</entry>
+  <entry key="The table of contents supplies an overview of all topics.">Das Inhaltsverzeichnis liefert einen Überblick aller Themen.</entry>
+  
+  <!-- toolbar -->
+  <entry key="Hide">Ausblenden</entry>
+  <entry key="Show">Einblenden</entry>
+  <entry key="Home">Startseite</entry>
+  <entry key="Previous">Zurück</entry>
+  <entry key="Next">Vor</entry>
+  <entry key="Print">Drucken</entry>
+  
+  <!-- tabsheet -->
+  <entry key="Content">Inhalt</entry>
+  <entry key="Search">Suche</entry>
+  <entry key="List of topics">Themenliste</entry>
+  <entry key="Keyword to search:">Zu suchendes Schlüsselwort:</entry>
+  <entry key="Select topic to display:">Themen zur Anzeige auswählen:</entry>
+  
+</properties>
