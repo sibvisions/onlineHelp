@@ -34,6 +34,9 @@ public class Config
 	/** the structure path. */
 	private File fiStructurePath;
 	
+	/** the help path. */
+	private String sHelpPath;
+	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Initialization
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,11 +46,14 @@ public class Config
 	 * 
 	 * @param pRootPath the root path
 	 * @param pStructurePath the structure path
+	 * @param pHelpPath the help path
 	 */
-	public Config(File pRootPath, File pStructurePath)
+	public Config(File pRootPath, File pStructurePath, String pHelpPath)
 	{
 		fiRootPath = pRootPath;
 		fiStructurePath = pStructurePath;
+		
+		sHelpPath = pHelpPath;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -72,6 +78,16 @@ public class Config
 	public File getStructurePath()
 	{
 		return fiStructurePath;
+	}
+	
+	/** 
+	 * Gets the help path. This is the resource path where the root path can be found.
+	 * 
+	 * @return the help path
+	 */
+	public String getHepPath()
+	{
+		return sHelpPath;
 	}
 	
 }	// Config

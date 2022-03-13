@@ -15,14 +15,13 @@
  */
 package com.sibvisions.apps.help;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.util.Series;
 
 import com.sibvisions.rad.server.http.rest.JSONUtil;
 
@@ -136,9 +135,7 @@ public class TestServices
 		Object obj = JSONUtil.getObject(rep);
 		
 		Assert.assertNotNull(obj);
-		
-		
-//		System.out.println(JSONUtil.prettyJson(obj));
+		Assert.assertEquals(24, ((List<?>)obj).size());
 		
 		cres = createRequest("content", "path=/multihelp/help_en");
 		
@@ -147,7 +144,6 @@ public class TestServices
 		obj = JSONUtil.getObject(rep);
 		
 		Assert.assertNotNull(obj);
-		
-		System.out.println(JSONUtil.prettyJson(obj));
+		Assert.assertEquals(19, ((List<?>)obj).size());
 	}
 }

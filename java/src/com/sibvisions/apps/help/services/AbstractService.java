@@ -114,6 +114,8 @@ public abstract class AbstractService extends ServerResource
 	    //ctxt.getContextPath()); --> /onlineHelpServices
 	    //ctxt.getRealPath("/")); --> /Users/rjahn/ROOT/tools/eclipse_workspace_photon/.metadata/.plugins/org.eclipse.wst.server.core/tmp13/wtpwebapps/onlineHelpServices/
 	    
+	    String sHelpPath = getQuery().getFirstValue("path");	    
+	    
 		File fiRoot = null;
 		
 		if (sRootPath != null)
@@ -129,8 +131,6 @@ public abstract class AbstractService extends ServerResource
 			}
 			else if (liFoundDir.size() > 1)
 			{
-				String sHelpPath = getQuery().getFirstValue("path");	
-				
 				if (sHelpPath != null)
 				{
 					File fiHelpPath = new File(sRootPath, sHelpPath);
@@ -172,8 +172,6 @@ public abstract class AbstractService extends ServerResource
 						}
 						else if (liFoundDir.size() > 1)
 						{
-							String sHelpPath = getQuery().getFirstValue("path");	
-							
 							if (sHelpPath != null)
 							{
 								File fiHelpPath = new File(fiHelpDir, sHelpPath);
@@ -189,7 +187,7 @@ public abstract class AbstractService extends ServerResource
 			}
 		}
 		
-		return new Config(fiRoot, new File(fiRoot, "/structure/"));
+		return new Config(fiRoot, new File(fiRoot, "/structure/"), sHelpPath);
 	}	
 	
 	/**
