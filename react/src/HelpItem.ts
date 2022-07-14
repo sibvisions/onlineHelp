@@ -13,19 +13,17 @@
  * the License.
  */
 
-import React, { FC } from 'react';
-import './App.css';
-import HelpMenu from './HelpMenu';
-
-const App: FC = () => {
-
-  const sendRequest = () => {
-    const baseURL = "http://localhost:8080/onlineHelpServices/services/help/";
-  }
-
-  return (
-    <HelpMenu />
-  );
+export type HelpItem = {
+    id?: number
+    type: "folder"|"file"|"download"
+    name: string
+    icon?: string
+    url?: string
+    parentID: number
 }
 
-export default App;
+export type HelpItemRoot = {
+    id: -1
+    name: "ROOT"
+}
+  

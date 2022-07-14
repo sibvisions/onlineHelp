@@ -13,58 +13,101 @@
  * the License.
  */
 
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
+import { PanelMenu } from 'primereact/panelmenu';
 import { MenuItem } from "primereact/menuitem";
 import { useState } from "react";
-import { HelpItem, HelpItemRoot, rawItems } from "./RawItems";
+import { HelpItem, HelpItemRoot } from "./HelpItem";
+import { sendRequest } from "./RequestService";
 
-interface HelpMenuItem extends MenuItem {
-    id: number
+interface IHelpMenu {
+    setUrlCallback: (url: string|undefined) => void
 }
 
-const HelpMenu: FC = () => {
-    const modelMap = useRef<Map<string, number>>(new Map())
+const HelpMenu: FC<IHelpMenu> = (props) => {
+    const modelMap = useRef<Map<string, number>>(new Map());
 
-    const buildModel = (rawItems: Array<HelpItem|HelpItemRoot>, currentModelState:HelpMenuItem[]): HelpMenuItem[] => {
+    const buildModel = (rawItems: Array<HelpItem|HelpItemRoot>, currentModelState:MenuItem[]): MenuItem[] => {
         const primeMenu = [...currentModelState];
 
         const itemIsNotRootItem = (item: HelpItem | HelpItemRoot): item is HelpItem => {
             return (item as HelpItem).parentID !== undefined;
         }
 
-        const getPathToItem = (id: number) => {
+        const getPathToItem = (id: number|undefined, parentID: number) => {
             const pathArray = [];
 
-            const startId = id;
-
             while (id !== -1) {
-                if (id !== startId) {
-                    pathArray.push(id);
+                if (id === undefined) {
+                    id = parentID;
                 }
-                
-                id = modelMap.current.get(id.toString()) as number;
+                else {
+                    id = modelMap.current.get(id.toString()) as number;
+                }
+
+                if (id !== -1) {
+                    pathArray.push(id)
+                }
             }
             return pathArray.reverse();
         }
 
+        const downloadFile = () => {
+            console.log('downloading file')
+        }
+
         rawItems.forEach(rawItem => {
-            //console.log(rawItem)
             if (itemIsNotRootItem(rawItem)) {
                 if (rawItem.id) {
                     modelMap.current.set(rawItem.id.toString(), rawItem.parentID);
                 }
+
+                const path = getPathToItem(rawItem.id, rawItem.parentID);
+
+                const menuItem:MenuItem = {
+                    id: rawItem.id?.toString() || undefined,
+                    label: rawItem.name,
+                    icon: rawItem.icon,
+                    style: rawItem.icon ? {
+                        '--iconWidth': '16px',
+                        '--iconHeight': '16px',
+                        '--iconImage': 'url(http://localhost:8085/onlineHelpServices/' + rawItem.icon + ')',
+                    } : undefined,
+                    items: rawItem.id ? [] : undefined,
+                    className: rawItem.icon ? "custom-menu-icon" : "",
+                    command: rawItem.url ? () => props.setUrlCallback(rawItem.url) : rawItem.type === "download" ? () => downloadFile() : undefined
+                }
+
+                if (path.length) {
+                    let menuIterator: MenuItem[] | undefined = primeMenu;
+
+                    for (let i = 0; i < path.length; i++) {
+                        if (menuIterator) {
+                            menuIterator = menuIterator.find(menuItem => menuItem.id === path[i].toString())?.items as MenuItem[] | undefined;
+                        }
+                    }
+                    menuIterator?.push(menuItem)
+                }
+                else {
+                    primeMenu.push(menuItem);
+                }
             }
-        });
+            else {
+                modelMap.current.set("-1", -1);
+            }
+        })
 
         return primeMenu
     }
 
-    const [model, setModel] = useState<HelpMenuItem[]>(buildModel(rawItems, []))
+    const [model, setModel] = useState<MenuItem[]>([]);
+
+    useEffect(() => {
+        sendRequest({}, "api/content?path=/").then((result) => setModel(buildModel(result, model)));
+    }, []);
 
     return (
-        <div>
-            test
-        </div>
+        <PanelMenu model={model} multiple />
     )
 }
 export default HelpMenu

@@ -1,0 +1,81 @@
+:root {
+    --topbar-background: #7a7f85;
+    --topbar-color: #ffffff;
+    --topbar-height: 60px;
+
+    --menu-background: #fafafa;
+    --menu-border: 1px solid rgba(120,130,140,.13);
+    --menu-width: 240px;
+    
+    --menu-item-hover-background: #e9ecef;
+    --menu-item-header-padding: 1rem 1rem 1rem 0.625rem;
+}
+
+.online-help-main {
+    height: 100vh;
+    display: flex;
+}
+
+.online-help-topbar {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: var(--topbar-height);
+    padding: 0 1rem;
+    background: var(--topbar-background);
+}
+
+.online-help-topbar-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--topbar-color);
+}
+
+.online-help-menu-wrapper {
+    :focus {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+    }
+    position: fixed;
+    width: var(--menu-width);
+    height: calc(100% - var(--topbar-height));
+    margin-top: var(--topbar-height);
+    background: var(--menu-background);
+    border-right: var(--menu-border);
+    border-top: var(--menu-border);
+
+    .p-panelmenu {
+        .p-panelmenu-header > a {
+            border: none;
+            background: var(--menu-background);
+            padding: var(--menu-item-header-padding);
+        }
+
+        .p-panelmenu-content {
+            border: none;
+            background: var(--menu-background);
+
+            .p-menuitem .p-menuitem-link:not(.p-disabled):hover {
+                background: var(--menu-item-hover-background)
+            }
+        }
+
+        .custom-menu-icon {
+            .p-menuitem-icon {
+                width: var(--iconWidth);
+                height: var(--iconHeight);
+                display: inline-block;
+                background-image: var(--iconImage);
+                background-size: var(--iconWidth);
+            }
+        }
+    } 
+}
+
+.online-help-content {
+    margin-top: var(--topbar-height);
+    margin-left: var(--menu-width);
+    flex: 1 1;
+}
