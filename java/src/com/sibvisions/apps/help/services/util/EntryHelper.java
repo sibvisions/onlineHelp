@@ -358,9 +358,9 @@ public class EntryHelper
 		//build the URL
 		ArrayList<String> alPathElements = new ArrayList<String>();
 		
-		File fiRootPath = config.getRootPath();
+		File fiRootPath = config.getRootPath().getParentFile();
 		File fiElement = pPath;
-
+		
 		while (fiElement != null && !fiElement.equals(fiRootPath))
 		{
 			alPathElements.add(encodeURLPart(fiElement.getName()));
