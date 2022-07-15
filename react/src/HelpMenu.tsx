@@ -16,16 +16,21 @@
 import React, { FC, useEffect, useRef } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { MenuItem } from "primereact/menuitem";
+import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
 import { HelpItem, HelpItemRoot } from "./HelpItem";
 import { sendRequest } from "./RequestService";
+import { useCallback } from "react";
 
 interface IHelpMenu {
+    helpUrl: {url: string, flag: boolean}
     setUrlCallback: (url: string|undefined) => void
 }
 
 const HelpMenu: FC<IHelpMenu> = (props) => {
     const modelMap = useRef<Map<string, number>>(new Map());
+
+    const [searchText, setSearchText] = useState<string>("");
 
     const buildModel = (rawItems: Array<HelpItem|HelpItemRoot>, currentModelState:MenuItem[]): MenuItem[] => {
         const primeMenu = [...currentModelState];
@@ -52,10 +57,6 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
             return pathArray.reverse();
         }
 
-        const downloadFile = () => {
-            console.log('downloading file')
-        }
-
         rawItems.forEach(rawItem => {
             if (itemIsNotRootItem(rawItem)) {
                 if (rawItem.id) {
@@ -69,13 +70,13 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                     label: rawItem.name,
                     icon: rawItem.icon,
                     style: rawItem.icon ? {
-                        '--iconWidth': '16px',
-                        '--iconHeight': '16px',
+                        '--iconWidth': '20px',
+                        '--iconHeight': '20px',
                         '--iconImage': 'url(http://localhost:8085/onlineHelpServices/' + rawItem.icon + ')',
                     } : undefined,
                     items: rawItem.id ? [] : undefined,
-                    className: rawItem.icon ? "custom-menu-icon" : "",
-                    command: rawItem.url ? () => props.setUrlCallback(rawItem.url) : rawItem.type === "download" ? () => downloadFile() : undefined
+                    className: rawItem.url ? rawItem.url + " item-has-url" : "" + " " +  rawItem.icon ? "custom-menu-icon" : "",
+                    command: () => props.setUrlCallback(rawItem.url)
                 }
 
                 if (path.length) {
@@ -103,11 +104,29 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
     const [model, setModel] = useState<MenuItem[]>([]);
 
     useEffect(() => {
-        sendRequest({}, "api/content?path=/").then((result) => setModel(buildModel(result, model)));
+        sendRequest({}, "api/content?path=/")
+        .then((result) => setModel(buildModel(result, model)));
     }, []);
 
+    useEffect(() => {
+        for (let item of document.getElementsByClassName("item-has-url")) {
+            item.classList.remove("item-active");
+
+            if (item.classList.contains(props.helpUrl.url)) {
+                item.classList.add("item-active");
+            }
+        }
+    }, [props.helpUrl.url, props.helpUrl.flag]);
+
     return (
-        <PanelMenu model={model} multiple />
+        <>
+            <span className="p-input-icon-left search-wrapper">
+                <i className="pi pi-search" />
+                <InputText value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search" />
+            </span>
+            <PanelMenu model={model} multiple />
+        </>
+        
     )
 }
 export default HelpMenu

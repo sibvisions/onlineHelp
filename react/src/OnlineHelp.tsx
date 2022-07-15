@@ -19,14 +19,14 @@ import HelpMenu from './HelpMenu';
 
 const OnlineHelp: FC = () => {
 
-  const [helpUrl, setHelpUrl] = useState("");
+  const [helpUrl, setHelpUrl] = useState<{ url:string, flag: boolean }>({ url: "", flag: false });
 
-  const setUrlCallback = (url: string|undefined) => {
+  const setUrlCallback = (url?: string|undefined) => {
     if (url) {
-      setHelpUrl(url)
+      setHelpUrl(prevState => ({ url: url, flag: !prevState.flag }))
     }
     else {
-      setHelpUrl("");
+      setHelpUrl(prevState => ({ url: prevState.url, flag: !prevState.flag }));
     }
   }
 
@@ -38,11 +38,11 @@ const OnlineHelp: FC = () => {
           <img className='online-help-topbar-logo' alt='company logo' src={process.env.PUBLIC_URL + '/assets/company.png'} />
         </div>
         <div className='online-help-menu-wrapper'>
-          <HelpMenu key={'help-menu'} setUrlCallback={setUrlCallback} />
+          <HelpMenu key={'help-menu'} helpUrl={helpUrl} setUrlCallback={setUrlCallback} />
         </div>
       </div>
       <div className='online-help-content'>
-        {helpUrl ? <iframe style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + helpUrl} /> : <></>}
+        {helpUrl.url ? <iframe style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + helpUrl.url} /> : <></>}
       </div>
     </div>
   );
