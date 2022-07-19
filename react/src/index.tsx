@@ -21,10 +21,14 @@ import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
 import OnlineHelp from './OnlineHelp';
 
+/**
+ * Creates a root element for the page
+ */
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+/** Renders the online-help */
 root.render(
     <OnlineHelp />
 );

@@ -13,6 +13,7 @@
  * the License.
  */
 
+/** Interface for Help-Menuitems */
 export type HelpItem = {
     id?: number
     type: "folder"|"file"|"download"
@@ -22,6 +23,7 @@ export type HelpItem = {
     parentID: number
 }
 
+/** Interface for the Help-Root-Item */
 export type HelpItemRoot = {
     id: -1
     name: "ROOT"

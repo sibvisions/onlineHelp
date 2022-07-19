@@ -19,29 +19,50 @@ import { MenuItem } from "primereact/menuitem";
 import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
 import { HelpItem, HelpItemRoot } from "./HelpItem";
-import { sendRequest } from "./RequestService";
-import { useCallback } from "react";
+import { baseUrl, sendRequest } from "./RequestService";
 
+/** Interface for the Help-Menu */
 interface IHelpMenu {
     helpUrl: {url: string, flag: boolean}
     setUrlCallback: (url: string|undefined) => void
 }
 
+/**
+ * This component renders a menu, which contains the help-items to display the help pages or to download files.
+ * @param props - helpUrl: the current url to be displayed, setUrlCallback: a callback to set the url.
+ */
 const HelpMenu: FC<IHelpMenu> = (props) => {
+    /** A flat map of all help-items which contains the help-item-id as key and the parent-id as value to find the correct item in menu-building */
     const modelMap = useRef<Map<string, number>>(new Map());
 
+    /** The text entered into the search-field */
     const [searchText, setSearchText] = useState<string>("");
 
+    /**
+     * Returns the current item-model so it can be used by a PrimeReact menu
+     * @param rawItems - an array of the help-items
+     * @param currentModelState - the current model-state
+     */
     const buildModel = (rawItems: Array<HelpItem|HelpItemRoot>, currentModelState:MenuItem[]): MenuItem[] => {
         const primeMenu = [...currentModelState];
 
+        /**
+         * Typescript type-identifier to check if the help-item is a root-item or not
+         * @param item - the help-item to check
+         */
         const itemIsNotRootItem = (item: HelpItem | HelpItemRoot): item is HelpItem => {
             return (item as HelpItem).parentID !== undefined;
         }
 
+        /**
+         * Returns the path to the help-item in the menu as array, to find it in the menu
+         * @param id - the id of the item
+         * @param parentID - the parent id of the item
+         */
         const getPathToItem = (id: number|undefined, parentID: number) => {
             const pathArray = [];
 
+            // Go from search-item-level to top level
             while (id !== -1) {
                 if (id === undefined) {
                     id = parentID;
@@ -54,6 +75,7 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                     pathArray.push(id)
                 }
             }
+            // reverse it because top-level needs to be first
             return pathArray.reverse();
         }
 
@@ -72,13 +94,14 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                     style: rawItem.icon ? {
                         '--iconWidth': '20px',
                         '--iconHeight': '20px',
-                        '--iconImage': 'url(http://localhost:8085/onlineHelpServices/' + rawItem.icon + ')',
+                        '--iconImage': 'url(' + baseUrl + rawItem.icon + ')',
                     } : undefined,
                     items: rawItem.id ? [] : undefined,
                     className: rawItem.url ? rawItem.url + " item-has-url" : "" + " " +  rawItem.icon ? "custom-menu-icon" : "",
                     command: () => props.setUrlCallback(rawItem.url)
                 }
 
+                // If there is a path, go through it to find the correct spot for the help-item, else just add it to root
                 if (path.length) {
                     let menuIterator: MenuItem[] | undefined = primeMenu;
 
@@ -101,13 +124,16 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
         return primeMenu
     }
 
+    /** The PrimeReact menu-model */
     const [model, setModel] = useState<MenuItem[]>([]);
 
+    /** Initially fetching the help-items and building the model */
     useEffect(() => {
         sendRequest({}, "api/content?path=/")
         .then((result) => setModel(buildModel(result, model)));
     }, []);
 
+    /** Setting a classname if the item is active to display a blue text */
     useEffect(() => {
         for (let item of document.getElementsByClassName("item-has-url")) {
             item.classList.remove("item-active");

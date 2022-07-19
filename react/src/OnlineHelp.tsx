@@ -17,10 +17,12 @@ import React, { FC, useState } from 'react';
 import './OnlineHelp.scss';
 import HelpMenu from './HelpMenu';
 
+/** This component renders the online-help page */
 const OnlineHelp: FC = () => {
-
+  /** The current active help-url */
   const [helpUrl, setHelpUrl] = useState<{ url:string, flag: boolean }>({ url: "", flag: false });
 
+  /** A callback to update the help-url state */
   const setUrlCallback = (url?: string|undefined) => {
     if (url) {
       setHelpUrl(prevState => ({ url: url, flag: !prevState.flag }))
