@@ -43,9 +43,10 @@ function timeoutRequest(promise: Promise<any>, ms: number) {
  * @returns - a request to send to the server
  */
 function buildReqOpts(request:any):RequestInit {
-    if (request && request.upload) {
+    if (request) {
         return {
-            method: 'GET',
+            method: 'POST',
+            body: JSON.stringify(request),
             credentials:"include",
         };
     }

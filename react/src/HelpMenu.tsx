@@ -27,6 +27,10 @@ interface IHelpMenu {
     setUrlCallback: (url: string|undefined) => void
 }
 
+export function concatClassnames(...classNames: (string | null | undefined)[]) {
+    return classNames.filter(Boolean).join(' ');
+}
+
 /**
  * This component renders a menu, which contains the help-items to display the help pages or to download files.
  * @param props - helpUrl: the current url to be displayed, setUrlCallback: a callback to set the url.
@@ -92,12 +96,13 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                     label: rawItem.name,
                     icon: rawItem.icon,
                     style: rawItem.icon ? {
-                        '--iconWidth': '20px',
-                        '--iconHeight': '20px',
                         '--iconImage': 'url(' + baseUrl + rawItem.icon + ')',
                     } : undefined,
                     items: rawItem.id ? [] : undefined,
-                    className: rawItem.url ? rawItem.url + " item-has-url" : "" + " " +  rawItem.icon ? "custom-menu-icon" : "",
+                    className: concatClassnames(
+                        rawItem.url ? `${rawItem.url} item-has-url` : "",
+                        rawItem.icon ? "custom-menu-icon" : ""
+                    ),
                     command: () => props.setUrlCallback(rawItem.url)
                 }
 
@@ -129,8 +134,9 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
 
     /** Initially fetching the help-items and building the model */
     useEffect(() => {
-        sendRequest({}, "api/content?path=/")
+        sendRequest(undefined, "api/content?path=/")
         .then((result) => setModel(buildModel(result, model)));
+    // eslint-disable-next-line
     }, []);
 
     /** Setting a classname if the item is active to display a blue text */

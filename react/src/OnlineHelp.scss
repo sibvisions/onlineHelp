@@ -10,6 +10,10 @@
     
     --menu-item-hover-background: #e9ecef;
     --menu-item-header-padding: 1rem 1rem 1rem 0.625rem;
+    --menu-item-sub-padding: 1rem 1rem 1rem 1.5rem;
+
+    --iconHeight: 20px;
+    --iconWidth: 20px;
 }
 
 .online-help-main {
@@ -26,6 +30,8 @@
     height: var(--topbar-height);
     padding: 0 1rem;
     background: var(--topbar-background);
+    // -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.6); 
+    // box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.6);
 }
 
 .online-help-topbar-header {
@@ -62,21 +68,36 @@
             border: none;
             background: var(--menu-background);
             padding: var(--menu-item-header-padding);
+
+        }
+
+        .p-panelmenu-icon {
+            position: absolute;
+            left: calc(var(--menu-width) - 30px);
+            margin-right: 0;
+        }
+
+        .p-menuitem-icon {
+            width: var(--iconWidth);
+            height: var(--iconHeight);
         }
 
         .p-panelmenu-content {
             border: none;
             background: var(--menu-background);
 
-            .p-menuitem .p-menuitem-link:not(.p-disabled):hover {
-                background: var(--menu-item-hover-background)
+            .p-menuitem .p-menuitem-link {
+                padding: var(--menu-item-sub-padding);
+
+                &:not(.p-disabled):hover {
+                    background: var(--menu-item-hover-background)
+                }
             }
         }
 
         .custom-menu-icon {
             .p-menuitem-icon {
-                width: var(--iconWidth);
-                height: var(--iconHeight);
+
                 display: inline-block;
                 background-image: var(--iconImage);
                 background-size: var(--iconWidth);
