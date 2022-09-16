@@ -128,6 +128,8 @@ public class TestServices
 	@Test
 	public void testGetContent() throws Exception
 	{
+		JSONUtil.setDumpStreamEnabled(true);
+		
 		ClientResource cres = createRequest("content", "path=/");
 		
 		Representation rep = cres.get();
@@ -145,5 +147,23 @@ public class TestServices
 		
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(19, ((List<?>)obj).size());
+	}
+	
+	/**
+	 * Tests, search contents.
+	 * 
+	 * @throws Exception if test fails
+	 */
+	@Test
+	public void testSearch() throws Exception
+	{
+		JSONUtil.setDumpStreamEnabled(true);
+		
+		ClientResource cres = createRequest("search", "path=/", "term=shows");
+		
+		Representation rep = cres.get();
+		
+		Object obj = JSONUtil.getObject(rep);
+
 	}
 }

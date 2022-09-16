@@ -15,12 +15,6 @@
  */
 package com.sibvisions.apps.help.services;
 
-import java.util.List;
-
-import javax.rad.type.bean.IBean;
-import javax.rad.util.TranslationMap;
-
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
@@ -42,18 +36,17 @@ public class ContentService extends AbstractService
 	 * Gets a list of all available help entries.
 	 * 
 	 * @return the entries list (self joined)
+	 * @throws Exception if configuration detection fails
 	 */
 	@Get
 	public Representation getEntries() throws Exception
 	{
 		Config cfg = createConfiguration();
 		
-		TranslationMap tmap = loadTranslation(cfg);
-		
 		EntryHelper eh = new EntryHelper(cfg);
-		eh.setTranslation(tmap);
+		eh.setTranslation(loadTranslation(cfg));
 		
-		return new JacksonRepresentation<List<IBean>>(eh.search());
+		return toInternalRepresentation(eh.search());
 	}
 	
 }

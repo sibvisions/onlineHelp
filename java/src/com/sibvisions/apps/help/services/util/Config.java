@@ -85,7 +85,7 @@ public class Config
 	 * 
 	 * @return the help path
 	 */
-	public String getHepPath()
+	public String getHelpPath()
 	{
 		return sHelpPath;
 	}

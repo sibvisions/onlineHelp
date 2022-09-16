@@ -168,38 +168,51 @@ public class EntryHelper
 				}
 				else
 				{
-					String sFileName = files[i].getName();
-
-					String sName = convertName(sFileName, false);
-					
-					if (trans != null)
-					{
-						sName = trans.translate(sName);
-					}
-
-					bean = new Bean();
-					
-					String sExtension = FileUtil.getExtension(sFileName);
-					
-					if ("html".equalsIgnoreCase(sExtension)
-						|| "htm".equalsIgnoreCase(sExtension))
-					{
-						bean.put("type", "file");
-					}
-					else
-					{
-						bean.put("type", "download");
-					}
-					
-					bean.put("name", sName);
-					bean.put("icon", getIcon(files[i]));
-					bean.put("url", getURL(files[i]));
+					bean = createFileEntry(files[i]);
 					bean.put("parentID", pIDCache.get(pPath.getAbsolutePath()));
 					
 					pFiles.add(bean);
 				}
 			}
     	}
+	}
+	
+	/**
+	 * Creates a file entry for the given file.
+	 * 
+	 * @param pFile the file
+	 * @return the entry as bean
+	 */
+	public Bean createFileEntry(File pFile)
+	{
+		String sFileName = pFile.getName();
+
+		String sName = convertName(sFileName, false);
+		
+		if (trans != null)
+		{
+			sName = trans.translate(sName);
+		}
+
+		Bean bean = new Bean();
+		
+		String sExtension = FileUtil.getExtension(sFileName);
+		
+		if ("html".equalsIgnoreCase(sExtension)
+			|| "htm".equalsIgnoreCase(sExtension))
+		{
+			bean.put("type", "file");
+		}
+		else
+		{
+			bean.put("type", "download");
+		}
+		
+		bean.put("name", sName);
+		bean.put("icon", getIcon(pFile));
+		bean.put("url", getURL(pFile));
+		
+		return bean;
 	}
 	
 	/**
@@ -278,7 +291,7 @@ public class EntryHelper
 	 * @param pFile the file.
 	 * @return the icon path.
 	 */
-	protected String getIcon(File pFile)
+	private String getIcon(File pFile)
 	{
 		String sName = convertName(pFile.getName(), false);
 		
@@ -332,7 +345,7 @@ public class EntryHelper
 	}
 	
 	/**
-	 * Gets the relative URL of the given file.
+	 * Gets the relative URL of the given file. If path is a directory, the index.html file will be used as file.
 	 * 
 	 * @param pPath the desired file
 	 * @return the URL to the file, accessible via web browser
@@ -382,14 +395,14 @@ public class EntryHelper
 		
 		return sbfUrl.toString();
 	}	
-
+	
 	/**
 	 * Encodes the part for an URL.
 	 * 
 	 * @param pURL the url part
 	 * @return the encoded part
 	 */
-	protected String encodeURLPart(String pURL)
+	private static String encodeURLPart(String pURL)
 	{
 		StringBuffer sbfUrl = new StringBuffer();
 		

@@ -35,14 +35,10 @@ import org.restlet.resource.ServerResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sibvisions.apps.help.services.util.Config;
-import com.sibvisions.rad.persist.bean.BeanConverter;
-import com.sibvisions.rad.persist.jdbc.DBAccess;
 import com.sibvisions.rad.server.config.ApplicationZone;
 import com.sibvisions.rad.server.config.Configuration;
 import com.sibvisions.rad.server.config.Configuration.ApplicationListOption;
 import com.sibvisions.rad.server.http.rest.JSONUtil;
-import com.sibvisions.rad.server.http.rest.service.mixin.BeanConverterMixin;
-import com.sibvisions.rad.server.http.rest.service.mixin.DBAccessMixin;
 import com.sibvisions.util.FileSearch;
 import com.sibvisions.util.log.LoggerFactory;
 import com.sibvisions.util.type.FileUtil;
@@ -73,10 +69,17 @@ public abstract class AbstractService extends ServerResource
         
         JSONUtil.configureObjectMapper(mapper);
         
-        mapper.addMixInAnnotations(DBAccess.class, DBAccessMixin.class);
-        mapper.addMixInAnnotations(BeanConverter.class, BeanConverterMixin.class);
-        
         return rep;
+	}
+	
+	/**
+	 * Gets the value of parameter: <code>path</code>.
+	 * 
+	 * @return the value of <code>path</code> parameter or <code>null</code> if missing
+	 */
+	protected String getParameterPath()
+	{
+		return getQuery().getFirstValue("path");
 	}
 	
 	/**
@@ -114,7 +117,7 @@ public abstract class AbstractService extends ServerResource
 	    //ctxt.getContextPath()); --> /onlineHelpServices
 	    //ctxt.getRealPath("/")); --> /Users/rjahn/ROOT/tools/eclipse_workspace_photon/.metadata/.plugins/org.eclipse.wst.server.core/tmp13/wtpwebapps/onlineHelpServices/
 	    
-	    String sHelpPath = getQuery().getFirstValue("path");	    
+	    String sHelpPath = getParameterPath();	    
 	    
 		File fiRoot = null;
 		
