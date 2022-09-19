@@ -17,6 +17,8 @@ package com.sibvisions.apps.help;
 
 import java.util.List;
 
+import javax.rad.util.TranslationMap;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.restlet.data.ClientInfo;
@@ -24,6 +26,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import com.sibvisions.rad.server.http.rest.JSONUtil;
+import com.sibvisions.util.type.CodecUtil;
 
 /**
  * The <code>TestServices</code> class is the test class for help services.
@@ -79,6 +82,8 @@ public class TestServices
 	{
 		StringBuilder sbAttribs = new StringBuilder();
 		
+		String[] sParam;
+		
 		if (pParameter != null && pParameter.length > 0)
 		{
 			sbAttribs.append("?");
@@ -90,7 +95,16 @@ public class TestServices
 					sbAttribs.append("&");
 				}
 				
-				sbAttribs.append(pParameter[i]);
+				sParam = pParameter[i].split("=");
+				
+				if (sParam.length > 1)
+				{
+					sbAttribs.append(sParam[0] + "=" + CodecUtil.encodeURLParameter(sParam[1]));
+				}
+				else
+				{
+					sbAttribs.append(pParameter[i]);
+				}
 			}
 		}
 		
@@ -164,6 +178,50 @@ public class TestServices
 		Representation rep = cres.get();
 		
 		Object obj = JSONUtil.getObject(rep);
+		
+		Assert.assertNotNull(obj);
+		Assert.assertEquals(2, ((List<?>)obj).size());
+		
 
+		cres = createRequest("search", "path=/multihelp/help_en", "term=shows");
+		
+		rep = cres.get();
+		
+		obj = JSONUtil.getObject(rep);
+		
+		Assert.assertNotNull(obj);
+		Assert.assertEquals(2, ((List<?>)obj).size());
 	}
+	
+	/**
+	 * Tests, search contents.
+	 * 
+	 * @throws Exception if test fails
+	 */
+	@Test
+	public void testTanslation() throws Exception
+	{
+		JSONUtil.setDumpStreamEnabled(true);
+		
+		ClientResource cres = createRequest("translation", "path=/");
+		
+		Representation rep = cres.get();
+		
+		TranslationMap tmap = (TranslationMap)JSONUtil.getObject(rep, TranslationMap.class);
+		
+		Assert.assertNotNull(tmap);
+		Assert.assertEquals("de", tmap.getLanguage());
+		Assert.assertFalse(tmap.getAsProperties().isEmpty());
+		
+		cres = createRequest("translation", "path=/", "language=en");
+		
+		rep = cres.get();
+		
+		tmap = (TranslationMap)JSONUtil.getObject(rep, TranslationMap.class);
+		
+		Assert.assertNotNull(tmap);
+		Assert.assertEquals("en", tmap.getLanguage());
+		Assert.assertTrue(tmap.getAsProperties().isEmpty());
+	}
+	
 }

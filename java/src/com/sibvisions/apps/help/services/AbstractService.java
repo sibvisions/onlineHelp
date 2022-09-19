@@ -27,7 +27,6 @@ import javax.rad.util.TranslationMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.restlet.data.Form;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.representation.Representation;
@@ -41,7 +40,7 @@ import com.sibvisions.rad.server.config.Configuration.ApplicationListOption;
 import com.sibvisions.rad.server.http.rest.JSONUtil;
 import com.sibvisions.util.FileSearch;
 import com.sibvisions.util.log.LoggerFactory;
-import com.sibvisions.util.type.FileUtil;
+import com.sibvisions.util.type.CommonUtil;
 import com.sibvisions.util.type.StringUtil;
 
 /**
@@ -201,10 +200,11 @@ public abstract class AbstractService extends ServerResource
 	 */
 	protected TranslationMap loadTranslation(Config pConfig)
 	{
-		Form query = getQuery();
+		HttpServletRequest req = ServletUtils.getRequest(getRequest());
 		
-		String sLanguage = query.getFirstValue("language");
-		
+		//don't use getQuery().getFirstValue("language") because language is removed from query
+		String sLanguage = req.getParameter("language");
+
 		if (StringUtil.isEmpty(sLanguage))
 		{
 			sLanguage = ServletUtils.getRequest(getRequest()).getLocale().getLanguage(); 
@@ -227,38 +227,63 @@ public abstract class AbstractService extends ServerResource
 	private TranslationMap loadTranslation(Config pConfig, String pLanguage)
 	{
 		String sLanguage = pLanguage.toLowerCase();
-		
+				
 		File fiDir = pConfig.getRootPath();
 		
-		String sDefaultTranslation = "helptranslation.xml";
-		
-		File fiTrans = new File(fiDir, "/translation/" + sDefaultTranslation);
-		
-		String sTranslation = fiTrans.getName();
-		
-		String sExt = FileUtil.getExtension(sTranslation);
-		String sName = FileUtil.removeExtension(sTranslation);
+		String sBaseName = "/translation/helptranslation";
+		String sExt = "xml";
 		
 		TranslationMap map = new TranslationMap();
 		
 		//load default language file
+		String sResourcePath = sBaseName + "." + sExt;
+		
+		File fiTrans = new File(fiDir, sResourcePath);
+
 		Properties prop = loadTranslation(fiTrans);
 		
 		if (prop != null)
 		{
 			map.setAsProperties(prop);
+			map.setResourcePath(sResourcePath);
 		}
 		
-		//try to load a language file with specific locale
-		String sLocalizedTranslation = sName + "_" + sLanguage + "." + sExt;
+		//try to load a translation file with specific language
+		sResourcePath = sBaseName + "_" + sLanguage + "." + sExt;
 		
-		fiTrans = new File(fiDir, "/translation/" + sLocalizedTranslation);
+		fiTrans = new File(fiDir, sResourcePath);
 		
 		prop = loadTranslation(fiTrans);
 		
 		if (prop != null)
 		{
 			map.setAsProperties(prop);
+			map.setResourcePath(sResourcePath);
+		}
+		else 
+		{
+			int iPos = sLanguage.indexOf("_");
+			
+			if (iPos > 0)
+			{
+				//e.g. de_AT
+				
+				//if no specific language_country file is available -> only use language
+				
+				sLanguage = sLanguage.substring(0, iPos);
+				
+				sResourcePath = sBaseName + "_" + sLanguage + "." + sExt;
+
+				fiTrans = new File(fiDir, sResourcePath);
+				
+				prop = loadTranslation(fiTrans);
+				
+				if (prop != null)
+				{
+					map.setAsProperties(prop);
+					map.setResourcePath(sResourcePath);
+				}
+			}
 		}
 		
 		map.setLanguage(sLanguage);
@@ -299,17 +324,7 @@ public abstract class AbstractService extends ServerResource
 		}
 		finally
 		{
-			if (isTranslation != null)
-			{
-				try
-				{
-					isTranslation.close();
-				}
-				catch (Exception e)
-				{
-					//nothing to be done
-				}
-			}
+			CommonUtil.close(isTranslation);
 		}
 		
 		return null;

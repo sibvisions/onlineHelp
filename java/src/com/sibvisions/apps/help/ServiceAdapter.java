@@ -27,6 +27,7 @@ import org.restlet.util.Series;
 
 import com.sibvisions.apps.help.services.ContentService;
 import com.sibvisions.apps.help.services.SearchService;
+import com.sibvisions.apps.help.services.TranslationService;
 import com.sibvisions.util.type.StringUtil;
 
 /**
@@ -63,6 +64,7 @@ public class ServiceAdapter extends Application
 		Router router = new Router(ctxt);
 		router.attach("/api/content", ContentService.class);
 		router.attach("/api/search", SearchService.class);
+		router.attach("/api/translation", TranslationService.class);
 		
 		Series<Parameter> serParam = ctxt.getParameters();
 		
