@@ -24,8 +24,11 @@ const OnlineHelp: FC = () => {
 
   /** A callback to update the help-url state */
   const setUrlCallback = (url?: string|undefined) => {
-    if (url) {
+    if (url && url !== "search-remove") {
       setHelpUrl(prevState => ({ url: url, flag: !prevState.flag }))
+    }
+    else if (url === "search-remove") {
+      setHelpUrl(prevState => ({ url: "", flag: !prevState.flag }))
     }
     else {
       setHelpUrl(prevState => ({ url: prevState.url, flag: !prevState.flag }));
@@ -44,7 +47,7 @@ const OnlineHelp: FC = () => {
         </div>
       </div>
       <div className='online-help-content'>
-        {helpUrl.url ? <iframe style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + helpUrl.url} /> : <></>}
+        {helpUrl.url && helpUrl.url !== "" && <iframe title='help-content' style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + helpUrl.url} />}
       </div>
     </div>
   );

@@ -13,18 +13,19 @@
  * the License.
  */
 
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useCallback } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { MenuItem } from "primereact/menuitem";
 import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
-import { HelpItem, HelpItemRoot } from "./HelpItem";
+import { HelpItem, HelpItemRoot, SearchItem } from "./Types";
 import { baseUrl, sendRequest } from "./RequestService";
+import { ListBox } from "primereact";
 
 /** Interface for the Help-Menu */
 interface IHelpMenu {
-    helpUrl: {url: string, flag: boolean}
-    setUrlCallback: (url: string|undefined) => void
+    helpUrl: { url: string, flag: boolean }
+    setUrlCallback: (url: string | undefined) => void
 }
 
 export function concatClassnames(...classNames: (string | null | undefined)[]) {
@@ -42,12 +43,14 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
     /** The text entered into the search-field */
     const [searchText, setSearchText] = useState<string>("");
 
+    const [selectedSearchItem, setSelectedSearchItem] = useState<SearchItem|undefined>(undefined);
+
     /**
      * Returns the current item-model so it can be used by a PrimeReact menu
      * @param rawItems - an array of the help-items
      * @param currentModelState - the current model-state
      */
-    const buildModel = (rawItems: Array<HelpItem|HelpItemRoot>, currentModelState:MenuItem[]): MenuItem[] => {
+    const buildModel = (rawItems: Array<HelpItem | HelpItemRoot>, currentModelState: MenuItem[]): MenuItem[] => {
         const primeMenu = [...currentModelState];
 
         /**
@@ -63,7 +66,7 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
          * @param id - the id of the item
          * @param parentID - the parent id of the item
          */
-        const getPathToItem = (id: number|undefined, parentID: number) => {
+        const getPathToItem = (id: number | undefined, parentID: number) => {
             const pathArray = [];
 
             // Go from search-item-level to top level
@@ -91,7 +94,7 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
 
                 const path = getPathToItem(rawItem.id, rawItem.parentID);
 
-                const menuItem:MenuItem = {
+                const menuItem: MenuItem = {
                     id: rawItem.id?.toString() || undefined,
                     label: rawItem.name,
                     icon: rawItem.icon,
@@ -130,13 +133,15 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
     }
 
     /** The PrimeReact menu-model */
-    const [model, setModel] = useState<MenuItem[]>([]);
+    const [menuModel, setModelModel] = useState<MenuItem[]>([]);
+
+    const [listBoxModel, setListBoxModel] = useState<SearchItem[]>();
 
     /** Initially fetching the help-items and building the model */
     useEffect(() => {
         sendRequest(undefined, "api/content?path=/")
-        .then((result) => setModel(buildModel(result, model)));
-    // eslint-disable-next-line
+            .then((result) => setModelModel(buildModel(result, menuModel)));
+        // eslint-disable-next-line
     }, []);
 
     /** Setting a classname if the item is active to display a blue text */
@@ -150,15 +155,81 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
         }
     }, [props.helpUrl.url, props.helpUrl.flag]);
 
+    const itemTemplate = (option: SearchItem) => {
+        return (
+            <div className="search-item">
+                <img
+                    className="search-item-icon"
+                    alt={option.name}
+                    src={baseUrl + option.icon} />
+                <div className="search-item-text">{option.name}</div>
+            </div>
+        );
+    }
+
+    const handleSearchMode = (text: string) => {
+        const menuElem = document.getElementById("online-help-menu");
+        const listElem = document.getElementById("online-help-listbox");
+        if (menuElem && listElem) {
+            if (text) {
+                menuElem.classList.add("search-mode-enabled");
+                listElem.classList.add("search-mode-enabled");
+            }
+            else {
+                menuElem.classList.remove("search-mode-enabled");
+                listElem.classList.remove("search-mode-enabled");
+            }
+        }
+    }
+
+    const handleSendSearchText = useCallback((text: string) => {
+        sendRequest(undefined, "api/search?path=/&term=" + text)
+        .then((result) => {
+            setListBoxModel(!text ? [] : result);
+            handleSearchMode(text);
+        });
+    }, [searchText])
+
     return (
         <>
-            <span className="p-input-icon-left search-wrapper">
+            <span className="p-input-icon-left search-wrapper p-input-icon-right">
                 <i className="pi pi-search" />
-                <InputText value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search" />
+                <InputText
+                    value={searchText}
+                    onChange={(event) => setSearchText(event.target.value)}
+                    onBlur={() => {
+                        handleSendSearchText(searchText);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSendSearchText(searchText);
+                        }
+                    }}
+                    placeholder="Search" />
+                <i className="clear-icon pi pi-times" onClick={() => {
+                    setSearchText("");
+                    handleSendSearchText("")
+                }} />
             </span>
-            <PanelMenu model={model} multiple />
+            <PanelMenu id="online-help-menu" model={menuModel} multiple />
+            <ListBox 
+                id="online-help-listbox" 
+                value={selectedSearchItem} 
+                options={listBoxModel} 
+                optionLabel="name" 
+                itemTemplate={itemTemplate} 
+                onChange={(e) => {
+                    console.log(e.value)
+                    setSelectedSearchItem(e.value);
+                    if (e.value) {
+                        props.setUrlCallback(e.value.url);
+                    }
+                    else {
+                        props.setUrlCallback("search-remove");
+                    }
+                }} />
         </>
-        
+
     )
 }
 export default HelpMenu

@@ -28,4 +28,10 @@ export type HelpItemRoot = {
     id: -1
     name: "ROOT"
 }
-  
+
+export type SearchItem = {
+    name: string,
+    type: "file"|"download",
+    url: string,
+    icon?: string
+}
