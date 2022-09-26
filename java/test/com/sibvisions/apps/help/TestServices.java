@@ -16,6 +16,7 @@
 package com.sibvisions.apps.help;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.rad.util.TranslationMap;
 
@@ -140,6 +141,7 @@ public class TestServices
 	 * @throws Exception if test fails
 	 */
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void testGetContent() throws Exception
 	{
 		JSONUtil.setDumpStreamEnabled(true);
@@ -147,12 +149,14 @@ public class TestServices
 		ClientResource cres = createRequest("content", "path=/");
 		
 		Representation rep = cres.get();
-		
+
 		Object obj = JSONUtil.getObject(rep);
 		
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(24, ((List<?>)obj).size());
 		
+		Assert.assertTrue(((String)(((Map)((List)obj).get(1)).get("icon"))).startsWith("/images/"));
+
 		cres = createRequest("content", "path=/multihelp/help_en");
 		
 		rep = cres.get();
@@ -161,6 +165,8 @@ public class TestServices
 		
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(19, ((List<?>)obj).size());
+		
+		Assert.assertTrue(((String)(((Map)((List)obj).get(1)).get("icon"))).startsWith("/multihelp/help_en/images/"));
 	}
 	
 	/**

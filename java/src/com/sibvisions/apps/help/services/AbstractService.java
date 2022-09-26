@@ -116,39 +116,46 @@ public abstract class AbstractService extends ServerResource
 	    //ctxt.getContextPath()); --> /onlineHelpServices
 	    //ctxt.getRealPath("/")); --> /Users/rjahn/ROOT/tools/eclipse_workspace_photon/.metadata/.plugins/org.eclipse.wst.server.core/tmp13/wtpwebapps/onlineHelpServices/
 	    
-	    String sHelpPath = getParameterPath();	    
+	    String sHelpPath = getParameterPath();
+	    
+	    if (sHelpPath == null)
+	    {
+	    	sHelpPath = "/";
+	    }
 	    
 		File fiRoot = null;
-		
+		File fiStructurePath = null;
+
 		if (sRootPath != null)
-		{
-			FileSearch fs = new FileSearch();
-			fs.search(sRootPath, true, "*/structure/");
+	    {
+			fiRoot = new File(sRootPath);
 			
-			List<String> liFoundDir = fs.getFoundDirectories();
-			
-			if (liFoundDir.size() == 1)
-			{
-				fiRoot = new File(liFoundDir.get(0)).getParentFile();
-			}
-			else if (liFoundDir.size() > 1)
-			{
-				if (sHelpPath != null)
+			File fiHelpPath = new File(fiRoot, sHelpPath + "/structure/");
+	    	
+	    	if (fiHelpPath.isDirectory())
+	    	{
+				fiStructurePath = fiHelpPath;
+	    	}
+
+	    	//no custom structure path -> try to find in root path
+	    	if (fiStructurePath == null)
+	    	{
+				FileSearch fs = new FileSearch();
+				fs.search(fiRoot, true, "*/structure/");
+				
+				List<String> liFoundDir = fs.getFoundDirectories();
+				
+				if (!liFoundDir.isEmpty())
 				{
-					File fiHelpPath = new File(sRootPath, sHelpPath);
-					
-					if (fiHelpPath.exists() && new File(fiHelpPath, "/structure/").isDirectory())
-					{
-						fiRoot = fiHelpPath;
-					}
+					//use first found (ignore multiple directories)
+					fiStructurePath = new File(liFoundDir.get(0));
 				}
-			}
-		}
-		
-		//root directory was not found -> maybe .war was not unpacked!
-		//try to fallback to application detection
-		if (fiRoot == null)
+	    	}
+	    }
+		else
 		{
+		    //root directory was not found -> maybe .war was not unpacked!
+			//try to fallback to application detection
 			List<String> liAppNames = Configuration.listApplicationNames(ApplicationListOption.Visible);
 			
 			if (liAppNames.size() == 1)
@@ -163,25 +170,29 @@ public abstract class AbstractService extends ServerResource
 					
 					if (fiHelpDir.exists() && fiHelpDir.isDirectory())
 					{
-						FileSearch fs = new FileSearch();
-						fs.search(fiHelpDir, true, "*/structure/");
+						fiRoot = fiHelpDir;
 
-						List<String> liFoundDir = fs.getFoundDirectories();
-
-						if (liFoundDir.size() == 1)
+						if (sHelpPath != null)
 						{
-							fiRoot = new File(liFoundDir.get(0)).getParentFile();
-						}
-						else if (liFoundDir.size() > 1)
-						{
-							if (sHelpPath != null)
+							File fiHelpPath = new File(fiHelpDir, sHelpPath + "/strucure/");
+							
+							if (fiHelpPath.isDirectory())
 							{
-								File fiHelpPath = new File(fiHelpDir, sHelpPath);
-								
-								if (fiHelpPath.exists() && new File(fiHelpPath, "/strucure/").isDirectory())
-								{
-									fiRoot = fiHelpPath;
-								}
+								fiStructurePath = fiHelpPath;
+							}
+						}
+
+						if (fiStructurePath == null)
+						{
+							FileSearch fs = new FileSearch();
+							fs.search(fiHelpDir, true, "*/structure/");
+
+							List<String> liFoundDir = fs.getFoundDirectories();
+
+							//use first found (ignore multiple directories)
+							if (!liFoundDir.isEmpty())
+							{
+								fiStructurePath = new File(liFoundDir.get(0));
 							}
 						}
 					}
@@ -189,7 +200,8 @@ public abstract class AbstractService extends ServerResource
 			}
 		}
 		
-		return new Config(fiRoot, new File(fiRoot, "/structure/"), sHelpPath);
+		return new Config(fiRoot != null ? fiRoot.getCanonicalFile() : null, 
+				          fiStructurePath != null ? fiStructurePath.getCanonicalFile() : null, sHelpPath);
 	}	
 	
 	/**

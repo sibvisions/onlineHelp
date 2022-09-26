@@ -17,7 +17,6 @@ package com.sibvisions.apps.help.services.util;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -334,7 +333,14 @@ public class EntryHelper
 	 */
 	private String getIcon(String pName)
 	{
-		String sRelativePath = "/images/tree/" + pName.toLowerCase() + ".png";
+		String sHelpPath = config.getHelpPath();
+		
+		if (sHelpPath.endsWith("/"))
+		{
+			sHelpPath = sHelpPath.substring(0, sHelpPath.length() - 1);
+		}
+		
+		String sRelativePath = sHelpPath + "/images/tree/" + pName.toLowerCase() + ".png";
 		
 		if (new File(config.getRootPath(), sRelativePath).isFile())
 		{
@@ -368,32 +374,19 @@ public class EntryHelper
 			}
 		}
 
-		//build the URL
-		ArrayList<String> alPathElements = new ArrayList<String>();
+		String sRelativePath = pPath.getAbsolutePath().substring(config.getRootPath().getAbsolutePath().length() + 1).replace("\\", "/");
 		
-		File fiRootPath = config.getRootPath().getParentFile();
-		File fiElement = pPath;
+		String[] sPathEntries = sRelativePath.split("/");
 		
-		while (fiElement != null && !fiElement.equals(fiRootPath))
+		StringBuilder sb = new StringBuilder();
+		
+		for (String sPath : sPathEntries)
 		{
-			alPathElements.add(encodeURLPart(fiElement.getName()));
-			
-			fiElement = fiElement.getParentFile();
-		}
-
-		StringBuffer sbfUrl = new StringBuffer("/");
-		
-		for (int anz = alPathElements.size() - 1, i = anz; i >= 0; i--)
-		{
-			if (i != anz)
-			{
-				sbfUrl.append("/");
-			}
-			
-			sbfUrl.append(alPathElements.get(i));
+			sb.append("/");
+			sb.append(encodeURLPart(sPath));
 		}
 		
-		return sbfUrl.toString();
+		return sb.toString();
 	}	
 	
 	/**
