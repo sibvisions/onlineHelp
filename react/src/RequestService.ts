@@ -13,8 +13,6 @@
  * the License.
  */
 
-import { helpPath } from "./OnlineHelp";
-
 /** The base-url for server requests */
 export const baseUrl = "http://localhost:8085/onlineHelpServices/"
 
@@ -41,17 +39,18 @@ function timeoutRequest(promise: Promise<any>, ms: number) {
 
 /**
  * Builds a request to send to the server
+ * @param request - the request to send
  * @returns - a request to send to the server
  */
-function buildReqOpts():RequestInit {
-    // if (request) {
-    //     return {
-    //         method: 'POST',
-    //         body: JSON.stringify(request),
-    //         credentials:"include",
-    //     };
-    // }
-    // else {
+function buildReqOpts(request:any):RequestInit {
+    if (request) {
+        return {
+            method: 'POST',
+            body: JSON.stringify(request),
+            credentials:"include",
+        };
+    }
+    else {
         return {
             method: 'GET',
             credentials:"include",
@@ -59,17 +58,17 @@ function buildReqOpts():RequestInit {
                 contentType: "application/json; charset=ISO-8859-1"
             }
         };
-    //}
+    }
 }
 
 /**
  * Sends a request to the server
+ * @param request - the request to send
  * @param endpoint - the endpoint to send the request to
- * @param option - the additional information to send in the endpoint
  */
-export function sendRequest(endpoint:string, option: string) {
+export function sendRequest(request: any, endpoint:string) {
     let promise = new Promise<any>((resolve) => {
-        timeoutRequest(fetch(baseUrl + "services/help/" + endpoint + "?" + helpPath + option, buildReqOpts()), 10000).then((response:any) => resolve(response.json()))
+        timeoutRequest(fetch(baseUrl + "services/help/" + endpoint, buildReqOpts(request)), 10000).then((response:any) => resolve(response.json()))
     });
     return promise
 }

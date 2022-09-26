@@ -403,7 +403,7 @@ public class EntryHelper
 
 		try
 		{
-			byte[] by = pURL.getBytes("UTF-8");
+			byte[] by = pURL.getBytes("ISO-8859-1");
 			
 			for (int i = 0, anz = by.length; i < anz; i++)
 			{

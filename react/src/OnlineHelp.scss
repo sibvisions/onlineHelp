@@ -35,20 +35,9 @@
 }
 
 .online-help-topbar-header {
-    display: flex;
-    flex-direction: column;
-    
-    
+    font-size: 24px;
+    font-weight: bold;
     color: var(--topbar-color);
-
-    .online-help-topbar-header-top {
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .online-help-topbar-header-bottom {
-        font-size: 14px;
-    }
 }
 
 .online-help-menu-wrapper {
