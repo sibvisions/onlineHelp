@@ -35,9 +35,19 @@
 }
 
 .online-help-topbar-header {
-    font-size: 24px;
-    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+
     color: var(--topbar-color);
+
+    .online-help-topbar-header-top {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .online-help-topbar-header-bottom {
+        font-size: 14px;
+    }
 }
 
 .online-help-menu-wrapper {
