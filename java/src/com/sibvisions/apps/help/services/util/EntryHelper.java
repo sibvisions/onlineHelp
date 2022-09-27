@@ -98,11 +98,19 @@ public class EntryHelper
 		HashMap<String, Integer> hmpIDCache = new HashMap<String, Integer>();
 		hmpIDCache.put(fiStructure.getAbsolutePath(), Integer.valueOf(-1));
 		
-		IBean bnRoot = new Bean();
-		bnRoot.put("id", Integer.valueOf(-1));
-		bnRoot.put("name", "ROOT");
+		IBean bnHome = new Bean();
+		bnHome.put("id", Integer.valueOf(-1));
+		bnHome.put("name", "HOME");
 		
-		liFiles.add(bnRoot);
+		File fiHome = new File(fiStructure, "index.html");
+		
+		if (fiHome.exists())
+		{
+			bnHome.put("type", "file");
+			bnHome.put("url", getURL(fiHome));
+		}		
+		
+		liFiles.add(bnHome);
 		
 		search(fiStructure, liFiles, hmpIDCache);
 		
