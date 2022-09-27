@@ -20,7 +20,7 @@ import { sendRequest } from './RequestService';
 import Loadingscreen from './Loadingscreen';
 import { MenuItem } from 'primereact';
 import { buildModel } from './util/BuildModel';
-import { translation } from './util/translation';
+import { translation } from './util/Translation';
 
 const urlParams = new Map(new URLSearchParams(window.location.search));
 
@@ -82,7 +82,10 @@ const OnlineHelp: FC = () => {
       <div className='online-help-main'>
         <div className='online-help-frame'>
           <div className='online-help-topbar'>
-            <span className='online-help-topbar-header'>Online-Help</span>
+            <div className='online-help-topbar-header'>
+              <span className='online-help-topbar-header-top'>{translation.get("You are in the help system of APPLICATION.")}</span>
+              <span className='online-help-topbar-header-bottom'>{translation.get("The table of contents supplies an overview of all topics.")}</span>
+            </div>
             <img className='online-help-topbar-logo' alt='company logo' src={process.env.PUBLIC_URL + '/assets/company.png'} />
           </div>
           <div className='online-help-menu-wrapper'>
