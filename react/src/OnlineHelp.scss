@@ -9,8 +9,8 @@
     --menu-activeitem-color: #2196F3;
     
     --menu-item-hover-background: #e9ecef;
-    --menu-item-header-padding: 1rem 1rem 1rem 0.625rem;
-    --menu-item-sub-padding: 1rem 1rem 1rem 1.5rem;
+    --menu-item-header-padding: 1rem 0.825rem 0.825rem 0.625rem;
+    --menu-item-sub-padding: 1rem 0.75rem 0.75rem 1.5rem;
 
     --iconHeight: 20px;
     --iconWidth: 20px;
@@ -183,8 +183,46 @@
     } 
 }
 
-.online-help-content {
+.online-help-center {
+    display: flex;
+    flex-direction: column;
     margin-top: var(--topbar-height);
     margin-left: var(--menu-width);
-    flex: 1 1;
+    flex: 1;
+
+    .online-help-button-bar {
+        padding: 0.5rem;
+        background: #f5f5f5;
+
+        button {
+            margin-right: 0.5rem;
+            background: #cdcdcd;
+            border-color: #cdcdcd;
+
+            &:hover {
+                background: #a6a6a6;
+                border-color: #a6a6a6;
+            }
+        }
+    }
+
+    .online-help-content {
+        flex: 1;
+    }
+}
+
+@media print {
+    body * {
+      visibility: hidden;
+    }
+    #test, #test * {
+      visibility: visible;
+    }
+    #test {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+    }
 }

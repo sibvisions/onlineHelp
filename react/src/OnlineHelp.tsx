@@ -18,15 +18,18 @@ import './OnlineHelp.scss';
 import HelpMenu from './HelpMenu';
 import { sendRequest } from './RequestService';
 import Loadingscreen from './Loadingscreen';
-import { MenuItem } from 'primereact';
+import { Button, MenuItem } from 'primereact';
 import { buildModel } from './util/BuildModel';
 import { translation } from './util/Translation';
+import { useRef } from 'react';
 
 const urlParams = new Map(new URLSearchParams(window.location.search));
 
 export const language = urlParams.get("language") || navigator.language || "en";
 
 export const helpPath = urlParams.get("path") ? "path=/" + urlParams.get("path") : "path=/";
+
+export let homeUrl: { url:string } = { url: "" };
 
 export enum ENDPOINTS {
   CONTENT = "api/content",
@@ -39,10 +42,27 @@ const OnlineHelp: FC = () => {
   /** The current active help-url */
   const [helpUrl, setHelpUrl] = useState<{ url: string, flag: boolean }>({ url: "", flag: false });
 
+  const [contentModel, setContentModel] = useState<MenuItem[] | undefined>(undefined)
+
+  const [translationReady, setTranslationReady] = useState<boolean>(false);
+
+  const helpReady = useMemo(() => contentModel && translationReady, [contentModel, translationReady]);
+
+  const helpHistory = useRef<{ urlArr: string[], activeIndex: number  }>({ urlArr: [], activeIndex: -1 });
+
   /** A callback to update the help-url state */
-  const setUrlCallback = (url?: string | undefined) => {
+  const setUrlCallback = (url?: string, withHistory?: boolean) => {
     if (url && url !== "search-remove") {
-      setHelpUrl(prevState => ({ url: url, flag: !prevState.flag }))
+      setHelpUrl(prevState => ({ url: url, flag: !prevState.flag }));
+      if (!withHistory) {
+        if (helpHistory.current.activeIndex !== helpHistory.current.urlArr.length - 1) {
+          helpHistory.current.urlArr = helpHistory.current.urlArr.slice(0, helpHistory.current.activeIndex + 1)
+          helpHistory.current.activeIndex = helpHistory.current.urlArr.length - 1;
+        }
+
+        helpHistory.current.urlArr.push(url);
+        helpHistory.current.activeIndex++;
+      }
     }
     else if (url === "search-remove") {
       setHelpUrl(prevState => ({ url: "", flag: !prevState.flag }))
@@ -52,11 +72,7 @@ const OnlineHelp: FC = () => {
     }
   }
 
-  const [contentModel, setContentModel] = useState<MenuItem[] | undefined>(undefined)
 
-  const [translationReady, setTranslationReady] = useState<boolean>(false);
-
-  const helpReady = useMemo(() => contentModel && translationReady, [contentModel, translationReady])
 
   useLayoutEffect(() => {
     sendRequest(ENDPOINTS.CONTENT, "")
@@ -71,6 +87,10 @@ const OnlineHelp: FC = () => {
 
           for (let i = 0; i < translationKeys.length; i++) {
             translation.set(translationKeys[i], translationValues[i]);
+
+            if (translationKeys[i].includes("help system")) {
+              document.title = translationValues[i];
+            }
           }
         }
       })
@@ -92,9 +112,50 @@ const OnlineHelp: FC = () => {
             <HelpMenu key={'help-menu'} helpUrl={helpUrl} contentModel={contentModel} setUrlCallback={setUrlCallback} />
           </div>
         </div>
-        <div className='online-help-content'>
-          {helpUrl.url && helpUrl.url !== "" && <iframe title='help-content' style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + helpUrl.url} />}
+        <div className='online-help-center'>
+          <div className='online-help-button-bar'>
+            { homeUrl.url && 
+            <Button 
+              icon="pi pi-home" 
+              onClick={() => {
+                setUrlCallback(homeUrl.url, false)
+              }}
+              tooltip={translation.get("Home")}
+              tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
+            }
+            <Button 
+              icon="pi pi-arrow-left" 
+              disabled={helpHistory.current.urlArr.length === 0 || helpHistory.current.activeIndex === 0}
+              onClick={() => {
+                helpHistory.current.activeIndex--;
+                setUrlCallback(helpHistory.current.urlArr[helpHistory.current.activeIndex], true);
+              }}
+              tooltip={translation.get("Previous")}
+              tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
+            <Button 
+              icon="pi pi-arrow-right" 
+              disabled={helpHistory.current.urlArr.length === 0 || helpHistory.current.activeIndex === helpHistory.current.urlArr.length -1}
+              onClick={() => {
+                helpHistory.current.activeIndex++;
+                setUrlCallback(helpHistory.current.urlArr[helpHistory.current.activeIndex], true);
+              }}
+              tooltip={translation.get("Next")}
+              tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
+            <Button
+              icon="pi pi-print"
+              onClick={() => {
+                if (helpUrl.url) {
+                  window.print();
+                }
+              }}
+              tooltip={translation.get("Print")}
+              tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
+          </div>
+          <div id='test' className='online-help-content'>
+            {(helpUrl.url || homeUrl.url) && <iframe title='help-content' id="help-content" name="help-content" style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + (helpUrl.url ? helpUrl.url : homeUrl.url)} />}
+          </div>
         </div>
+
       </div>
       :
       <Loadingscreen />

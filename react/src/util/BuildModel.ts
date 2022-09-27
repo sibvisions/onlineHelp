@@ -1,6 +1,7 @@
 import { MenuItem } from "primereact";
+import { homeUrl } from "../OnlineHelp";
 import { baseUrl } from "../RequestService";
-import { HelpItem, HelpItemRoot } from "../Types";
+import { HelpItem, HelpItemHome } from "../Types";
 import { concatClassnames } from "./ConcatClassNames";
 
 /**
@@ -8,7 +9,7 @@ import { concatClassnames } from "./ConcatClassNames";
  * @param rawItems - an array of the help-items
  * @param currentModelState - the current model-state
  */
-export function buildModel(rawItems: Array<HelpItem | HelpItemRoot>, currentModelState: MenuItem[], setUrlCallback: (url: string | undefined) => void): MenuItem[] {
+export function buildModel(rawItems: Array<HelpItem | HelpItemHome>, currentModelState: MenuItem[], setUrlCallback: (url: string | undefined) => void): MenuItem[] {
     const modelMap: Map<string, number> = new Map<string, number>();
 
     const primeMenu = [...currentModelState];
@@ -17,7 +18,7 @@ export function buildModel(rawItems: Array<HelpItem | HelpItemRoot>, currentMode
      * Typescript type-identifier to check if the help-item is a root-item or not
      * @param item - the help-item to check
      */
-    const itemIsNotRootItem = (item: HelpItem | HelpItemRoot): item is HelpItem => {
+    const itemIsNotRootItem = (item: HelpItem | HelpItemHome): item is HelpItem => {
         return (item as HelpItem).parentID !== undefined;
     }
 
@@ -86,6 +87,9 @@ export function buildModel(rawItems: Array<HelpItem | HelpItemRoot>, currentMode
         }
         else {
             modelMap.set("-1", -1);
+            if (rawItem.url) {
+                homeUrl.url = rawItem.url;
+            }
         }
     })
 

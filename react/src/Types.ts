@@ -24,9 +24,11 @@ export type HelpItem = {
 }
 
 /** Interface for the Help-Root-Item */
-export type HelpItemRoot = {
+export type HelpItemHome = {
     id: -1
-    name: "ROOT"
+    name: "HOME"
+    type: "file"
+    url?: string
 }
 
 export type SearchItem = {
