@@ -1,4 +1,4 @@
-import { ProgressSpinner } from "primereact";
+import { ProgressSpinner } from "primereact/progressspinner";
 import React, { FC } from "react";
 import './Loadingscreen.scss'
 

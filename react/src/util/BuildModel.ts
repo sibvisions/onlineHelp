@@ -1,8 +1,9 @@
-import { MenuItem } from "primereact";
+import { MenuItem } from "primereact/menuitem";
 import { homeUrl } from "../OnlineHelp";
 import { baseUrl } from "../RequestService";
 import { HelpItem, HelpItemHome } from "../Types";
 import { concatClassnames } from "./ConcatClassNames";
+import { CSSProperties } from "react";
 
 /**
  * Returns the current item-model so it can be used by a PrimeReact menu
@@ -61,7 +62,7 @@ export function buildModel(rawItems: Array<HelpItem | HelpItemHome>, currentMode
                 icon: rawItem.icon,
                 style: rawItem.icon ? {
                     '--iconImage': 'url(' + baseUrl + rawItem.icon + ')',
-                } : undefined,
+                } as CSSProperties : undefined,
                 items: rawItem.id ? [] : undefined,
                 className: concatClassnames(
                     rawItem.url ? `${rawItem.url} item-has-url` : "",

@@ -18,7 +18,8 @@ import './OnlineHelp.scss';
 import HelpMenu from './HelpMenu';
 import { sendRequest } from './RequestService';
 import Loadingscreen from './Loadingscreen';
-import { Button, MenuItem } from 'primereact';
+import { Button} from 'primereact/button';
+import { MenuItem } from 'primereact/menuitem'
 import { buildModel } from './util/BuildModel';
 import { translation } from './util/Translation';
 import { useRef } from 'react';

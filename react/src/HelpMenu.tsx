@@ -20,7 +20,7 @@ import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
 import { SearchItem } from "./Types";
 import { baseUrl, sendRequest } from "./RequestService";
-import { ListBox } from "primereact";
+import { ListBox } from "primereact/listbox";
 import { ENDPOINTS } from "./OnlineHelp";
 import { translation } from "./util/Translation";
 
