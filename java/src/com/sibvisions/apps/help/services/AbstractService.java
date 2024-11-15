@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import javax.rad.util.TranslationMap;
+import jvx.rad.util.TranslationMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 

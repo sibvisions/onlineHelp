@@ -15,7 +15,7 @@
  */
 package com.sibvisions.apps.help.services;
 
-import javax.rad.util.TranslationMap;
+import jvx.rad.util.TranslationMap;
 
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;

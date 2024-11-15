@@ -22,9 +22,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.rad.type.bean.Bean;
-import javax.rad.type.bean.IBean;
-import javax.rad.util.TranslationMap;
+import jvx.rad.type.bean.Bean;
+import jvx.rad.type.bean.IBean;
+import jvx.rad.util.TranslationMap;
 
 import com.sibvisions.util.ArrayUtil;
 import com.sibvisions.util.type.FileUtil;

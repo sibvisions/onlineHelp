@@ -18,7 +18,7 @@ package com.sibvisions.apps.help;
 import java.util.List;
 import java.util.Map;
 
-import javax.rad.util.TranslationMap;
+import jvx.rad.util.TranslationMap;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.rad.type.bean.IBean;
+import jvx.rad.type.bean.IBean;
 
 import org.restlet.Request;
 import org.restlet.representation.Representation;
