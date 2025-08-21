@@ -104,12 +104,9 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                     value={searchText}
                     autoComplete="search"
                     placeholder={translation.get("Search")}
-                    onChange={(event) => {console.log('onChange!'); setSearchText(event.target.value)}} 
-                    onBlur={() => {
-                        console.log('onBlur!'); handleSendSearchText(searchText);
-                    }}
+                    onChange={(event) => setSearchText(event.target.value) } 
+                    onBlur={() => handleSendSearchText(searchText) }
                     onKeyDown={(e) => {
-                        console.log('onKeyDown!'); 
                         if (e.key === "Enter") {
                             handleSendSearchText(searchText);
                         }
@@ -128,7 +125,6 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                 optionLabel="name" 
                 itemTemplate={itemTemplate} 
                 onChange={(e) => {
-                    console.log(e.value)
                     setSelectedSearchItem(e.value);
                     if (e.value) {
                         props.setUrlCallback(e.value.url);
