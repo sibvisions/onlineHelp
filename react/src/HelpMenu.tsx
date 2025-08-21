@@ -16,6 +16,8 @@
 import React, { FC, useEffect, useCallback } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { MenuItem } from "primereact/menuitem";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
 import { SearchItem } from "./Types";
@@ -94,25 +96,30 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
 
     return (
         <>
-            <span className="p-input-icon-left search-wrapper p-input-icon-right">
-                <i className="pi pi-search" />
+            <IconField iconPosition="left" className="search-wrapper p-icon-field-right">
+                <InputIcon className="pi pi-search" />
                 <InputText
+                    id="search"
+                    type="text"
                     value={searchText}
-                    onChange={(event) => setSearchText(event.target.value)}
+                    autoComplete="search"
+                    placeholder={translation.get("Search")}
+                    onChange={(event) => {console.log('onChange!'); setSearchText(event.target.value)}} 
                     onBlur={() => {
-                        handleSendSearchText(searchText);
+                        console.log('onBlur!'); handleSendSearchText(searchText);
                     }}
                     onKeyDown={(e) => {
+                        console.log('onKeyDown!'); 
                         if (e.key === "Enter") {
                             handleSendSearchText(searchText);
                         }
                     }}
-                    placeholder={translation.get("Search")} />
-                <i className="clear-icon pi pi-times" onClick={() => {
+                />
+                <InputIcon className="clear-icon pi pi-times" onClick={() => {
                     setSearchText("");
                     handleSendSearchText("")
                 }} />
-            </span>
+            </IconField>
             <PanelMenu id="online-help-menu" model={props.contentModel} multiple />
             <ListBox 
                 id="online-help-listbox" 

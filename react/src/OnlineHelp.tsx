@@ -107,7 +107,7 @@ const OnlineHelp: FC = () => {
               <span className='online-help-topbar-header-top'>{translation.get("You are in the help system of APPLICATION.")}</span>
               <span className='online-help-topbar-header-bottom'>{translation.get("The table of contents supplies an overview of all topics.")}</span>
             </div>
-            <img className='online-help-topbar-logo' alt='company logo' src={process.env.PUBLIC_URL + '/assets/company.png'} />
+            <img className='online-help-topbar-logo' alt='company logo' src={'/assets/company.png'} />
           </div>
           <div className='online-help-menu-wrapper'>
             <HelpMenu key={'help-menu'} helpUrl={helpUrl} contentModel={contentModel} setUrlCallback={setUrlCallback} />
@@ -153,7 +153,7 @@ const OnlineHelp: FC = () => {
               tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
           </div>
           <div id='test' className='online-help-content'>
-            {(helpUrl.url || homeUrl.url) && <iframe title='help-content' id="help-content" name="help-content" style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8085/onlineHelpServices' + (helpUrl.url ? helpUrl.url : homeUrl.url)} />}
+            {(helpUrl.url || homeUrl.url) && <iframe title='help-content' id="help-content" name="help-content" style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8080/onlineHelpServices' + (helpUrl.url ? helpUrl.url : homeUrl.url)} />}
           </div>
         </div>
 

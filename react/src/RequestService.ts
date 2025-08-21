@@ -16,7 +16,7 @@
 import { helpPath } from "./OnlineHelp";
 
 /** The base-url for server requests */
-export const baseUrl = "http://localhost:8085/onlineHelpServices/"
+export const baseUrl = "http://localhost:8080/onlineHelpServices/"
 
 /**
  * Returns a promise which times out and throws an error and displays dialog after given ms
