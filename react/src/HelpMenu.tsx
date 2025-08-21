@@ -14,6 +14,7 @@
  */
 
 import React, { FC, useEffect, useCallback } from "react";
+import './HelpMenu.scss'
 import { PanelMenu } from 'primereact/panelmenu';
 import { MenuItem } from "primereact/menuitem";
 import { IconField } from "primereact/iconfield";
