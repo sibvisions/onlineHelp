@@ -411,7 +411,7 @@ public class EntryHelper
 
 		try
 		{
-			byte[] by = pURL.getBytes("ISO-8859-1");
+			byte[] by = pURL.getBytes("UTF8");
 			
 			for (int i = 0, anz = by.length; i < anz; i++)
 			{

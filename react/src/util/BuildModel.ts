@@ -1,6 +1,6 @@
 import { MenuItem } from "primereact/menuitem";
 import { homeUrl } from "../OnlineHelp";
-import { baseUrl } from "../RequestService";
+import { getBaseUrl } from "../RequestService";
 import { HelpItem, HelpItemHome } from "../Types";
 import { concatClassnames } from "./ConcatClassNames";
 import { CSSProperties } from "react";
@@ -61,7 +61,7 @@ export function buildModel(rawItems: Array<HelpItem | HelpItemHome>, currentMode
                 label: rawItem.name,
                 icon: rawItem.icon,
                 style: rawItem.icon ? {
-                    '--iconImage': 'url(' + baseUrl + rawItem.icon + ')',
+                    '--iconImage': 'url(' + getBaseUrl() + rawItem.icon + ')',
                 } as CSSProperties : undefined,
                 items: rawItem.id ? [] : undefined,
                 className: concatClassnames(

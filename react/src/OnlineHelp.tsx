@@ -16,7 +16,7 @@
 import React, { FC, useLayoutEffect, useState, useMemo } from 'react';
 import './OnlineHelp.scss';
 import HelpMenu from './HelpMenu';
-import { sendRequest } from './RequestService';
+import { getBaseUrl, setBaseUrl, sendRequest } from './RequestService';
 import Loadingscreen from './Loadingscreen';
 import { Button} from 'primereact/button';
 import { MenuItem } from 'primereact/menuitem'
@@ -24,9 +24,10 @@ import { buildModel } from './util/BuildModel';
 import { translation } from './util/Translation';
 import { useRef } from 'react';
 
+
 const urlParams = new Map(new URLSearchParams(window.location.search));
 
-export const language = urlParams.get("language") || navigator.language || "en";
+export const language = "&language=" + (urlParams.get("language") || navigator.language || "en");
 
 export const helpPath = urlParams.get("path") ? "path=/" + urlParams.get("path") : "path=/";
 
@@ -73,29 +74,63 @@ const OnlineHelp: FC = () => {
     }
   }
 
-
-
   useLayoutEffect(() => {
-    sendRequest(ENDPOINTS.CONTENT, "")
-      .then((result) => {
-        setContentModel(buildModel(result, contentModel || [], setUrlCallback));
-      });
-    sendRequest(ENDPOINTS.TRANSLATION, "&language=" + language)
-      .then((result) => {
-        if (result.asProperties) {
-          const translationKeys = Object.keys(result.asProperties);
-          const translationValues = Object.values(result.asProperties) as string[];
+    const initBaseUrl = (): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        try {
+          if (process.env.NODE_ENV === "development") {
+            fetch('config.json')
+              .then((r) => r.json())
+              .then((data) => {
+                if (data.baseUrl) {
+                  setBaseUrl(data.baseUrl);
+                  resolve();
+                }
+                else
+                {
+                  reject('No baseUrl in config.json');
+                }
+              })
+              .catch(reject);
+          }else if (process.env.NODE_ENV === "production")
+          {
+            const splitURLPath = window.location.pathname.split("/");
 
-          for (let i = 0; i < translationKeys.length; i++) {
-            translation.set(translationKeys[i], translationValues[i]);
-
-            if (translationKeys[i].includes("help system")) {
-              document.title = translationValues[i];
-            }
+            setBaseUrl(window.location.protocol + "//" + window.location.host + (splitURLPath.length === 4 ? "/" + splitURLPath[1] : ""));
+            resolve();
           }
+        } catch (err) {
+          reject(err);
         }
-      })
-      .then(() => setTranslationReady(true))
+      });
+    };
+
+    initBaseUrl()
+      .then(() => {
+        sendRequest(ENDPOINTS.CONTENT, "")
+          .then((result) => {
+            setContentModel(buildModel(result, contentModel || [], setUrlCallback));
+          });
+        sendRequest(ENDPOINTS.TRANSLATION, "")
+          .then((result) => {
+            if (result.asProperties) {
+              const translationKeys = Object.keys(result.asProperties);
+              const translationValues = Object.values(result.asProperties) as string[];
+
+              for (let i = 0; i < translationKeys.length; i++) {
+                translation.set(translationKeys[i], translationValues[i]);
+
+                if (translationKeys[i].includes("help system")) {
+                  document.title = translationValues[i];
+                }
+              }
+            }
+          })
+          .then(() => setTranslationReady(true))
+        })
+        .catch((err) => {
+          console.error("BaseUrl konnte nicht initialisiert werden", err);
+        });
   }, []);
 
   return (
@@ -153,7 +188,7 @@ const OnlineHelp: FC = () => {
               tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
           </div>
           <div id='test' className='online-help-content'>
-            {(helpUrl.url || homeUrl.url) && <iframe title='help-content' id="help-content" name="help-content" style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={'http://localhost:8080/onlineHelpServices' + (helpUrl.url ? helpUrl.url : homeUrl.url)} />}
+            {(helpUrl.url || homeUrl.url) && <iframe title='help-content' id="help-content" name="help-content" style={{ width: "100%", height: "100%", border: "none", display: "block" }} src={getBaseUrl() + (helpUrl.url ? helpUrl.url : homeUrl.url)} />}
           </div>
         </div>
 

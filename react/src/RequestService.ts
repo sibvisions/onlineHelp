@@ -13,10 +13,10 @@
  * the License.
  */
 
-import { helpPath } from "./OnlineHelp";
+import { helpPath, language } from "./OnlineHelp";
 
 /** The base-url for server requests */
-export const baseUrl = "http://localhost:8080/onlineHelpServices/"
+let _baseUrl = "";
 
 /**
  * Returns a promise which times out and throws an error and displays dialog after given ms
@@ -64,13 +64,29 @@ function buildReqOpts():RequestInit {
 }
 
 /**
+ * Sets the base url.
+ * @param url - the base url
+ */
+export function setBaseUrl(url: string) {
+  _baseUrl = url;
+}
+
+/**
+ * Gets the base url.
+ * @return the base url
+ */
+export function getBaseUrl() {
+  return _baseUrl;
+}
+
+/**
  * Sends a request to the server
  * @param request - the request to send
  * @param endpoint - the endpoint to send the request to
  */
 export function sendRequest(endpoint:string, option: string) {
     let promise = new Promise<any>((resolve) => {
-        timeoutRequest(fetch(baseUrl + "services/help/" + endpoint + "?" + helpPath + option, buildReqOpts()), 10000).then((response:any) => resolve(response.json()))
+        timeoutRequest(fetch(getBaseUrl() + "/services/help/" + endpoint + "?" + helpPath + language + option, buildReqOpts()), 10000).then((response:any) => resolve(response.json()))
     });
     return promise
 }

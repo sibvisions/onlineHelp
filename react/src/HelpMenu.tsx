@@ -22,7 +22,7 @@ import { InputIcon } from "primereact/inputicon";
 import { InputText } from 'primereact/inputtext';
 import { useState } from "react";
 import { SearchItem } from "./Types";
-import { baseUrl, sendRequest } from "./RequestService";
+import { getBaseUrl, sendRequest } from "./RequestService";
 import { ListBox } from "primereact/listbox";
 import { ENDPOINTS } from "./OnlineHelp";
 import { translation } from "./util/Translation";
@@ -66,7 +66,7 @@ const HelpMenu: FC<IHelpMenu> = (props) => {
                 <img
                     className="search-item-icon"
                     alt={option.name}
-                    src={baseUrl + option.icon} />
+                    src={getBaseUrl() + option.icon} />
                 <div className="search-item-text">{option.name}</div>
             </div>
         );
