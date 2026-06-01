@@ -7,10 +7,7 @@ export default defineConfig({
     react()],
   base: './',
   resolve: { // solves the problem with link modules and different react instances
-    alias: {
-      react: path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
-    }
+    dedupe: ['react', 'react-dom']
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
@@ -20,7 +17,7 @@ export default defineConfig({
     assetsDir: 'static',
     sourcemap: true,
     cssCodeSplit: true,
-    minify: 'esbuild',
+    minify: true,
     rollupOptions: {
       output: {
         entryFileNames: (chunkInfo) => {
