@@ -458,7 +458,7 @@ public class EntryHelper
 	 * 
 	 * @author René Jahn
 	 */
-	private class StructureFilenameFilter implements FilenameFilter
+	private final class StructureFilenameFilter implements FilenameFilter
 	{
 		/**
 		 * {@inheritDoc}
